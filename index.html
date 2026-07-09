@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Шахматный Тренер Координат</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            user-select: none;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+            color: #4CAF50;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            font-size: 16px;
+            background: #1e1e1e;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .target-box {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #ffeb3b;
+            text-shadow: 0 0 10px rgba(255, 235, 59, 0.3);
+        }
+
+        .chessboard {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            grid-template-rows: repeat(8, 1fr);
+            width: 100%;
+            aspect-ratio: 1 / 1; 
+            border: 4px solid #333;
+            border-radius: 4px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+        }
+
+        .cell {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.1s ease;
+        }
+
+        .light {
+            background-color: #f0d9b5;
+            color: #b58863;
+        }
+
+        .dark {
+            background-color: #b58863;
+            color: #f0d9b5;
+        }
+
+        .cell:active {
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <h1>Chess Coordinates</h1>
+        
+        <div class="stats">
+            <div>Очки: <span id="score">0</span></div>
+            <div>Рекорд: <span id="highscore">0</span></div>
+            <div>Время: <span id="timer">30</span>с</div>
+        </div>
+
+        <div class="target-box" id="target">??</div>
+        <div class="chessboard" id="board"></div>
+    </div>
+
+    <script>
+        const board = document.getElementById('board');
+        const targetBox = document.getElementById('target');
+        const scoreBox = document.getElementById('score');
+        const highscoreBox = document.getElementById('highscore');
+        const timerBox = document.getElementById('timer');
+
+        const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+        const ranks = ['8', '7', '6', '5', '4', '3', '2', '1'];
+
+        let allCoordinates = [];
+        let score = 0;
+        let highscore = 0;
+        let timeLeft = 30;
+        let currentTarget = '';
+        let gameInterval = null;
+        let isPlaying = false;
+
+        // Загружаем рекорд из памяти браузера при старте страницы
+        function loadHighscore() {
+            const savedScore = localStorage.getItem('chess_highscore');
+            if (savedScore) {
+                highscore = parseInt(savedScore);
+                highscoreBox.innerText = highscore;
+            }
+        }
+
+        function createBoard() {
+            board.innerHTML = '';
+            allCoordinates = [];
+
+            for (let r = 0; r < ranks.length; r++) {
+                for (let f = 0; f < files.length; f++) {
+                    const coordinate = files[f] + ranks[r];
+                    allCoordinates.push(coordinate);
+
+                    const cell = document.createElement('div');
+                    cell.classList.add('cell');
+                    
+                    if ((r + f) % 2 === 0) {
+                        cell.classList.add('light');
+                    } else {
+                        cell.classList.add('dark');
+                    }
+
+                    cell.dataset.coord = coordinate;
+                    cell.addEventListener('click', () => handleCellClick(coordinate, cell));
+                    board.appendChild(cell);
+                }
+            }
+        }
+
+        function nextTarget() {
+            const randomIndex = Math.floor(Math.random() * allCoordinates.length);
+            currentTarget = allCoordinates[randomIndex];
+            targetBox.innerText = currentTarget;
+        }
+
+        function startTimer() {
+            isPlaying = true;
+            gameInterval = setInterval(() => {
+                timeLeft--;
+                timerBox.innerText = timeLeft;
+
+                if (timeLeft <= 0) {
+                    clearInterval(gameInterval);
+                    isPlaying = false;
+                    
+                    // Проверяем и сохраняем новый рекорд
+                    if (score > highscore) {
+                        highscore = score;
+                        localStorage.setItem('chess_highscore', highscore);
+                        highscoreBox.innerText = highscore;
+                        alert(`Новый рекорд! Вы набрали: ${score}`);
+                    } else {
+                        alert(`Время вышло! Ваши очки: ${score}`);
+                    }
+                    
+                    resetGame();
+                }
+            }, 1000);
+        }
+
+        function handleCellClick(clickedCoord, cellElement) {
+            if (timeLeft <= 0) return;
+
+            if (!isPlaying && score === 0 && timeLeft === 30) {
+                startTimer();
+            }
+
+            if (clickedCoord === currentTarget) {
+                score++;
+                scoreBox.innerText = score;
+                
+                cellElement.style.backgroundColor = '#2ecc71';
+                setTimeout(() => cellElement.style.backgroundColor = '', 150);
+
+                nextTarget();
+            } else {
+                cellElement.style.backgroundColor = '#e74c3c';
+                setTimeout(() => cellElement.style.backgroundColor = '', 150);
+            }
+        }
+
+        function resetGame() {
+            score = 0;
+            timeLeft = 30;
+            scoreBox.innerText = score;
+            timerBox.innerText = timeLeft;
+            isPlaying = false;
+            nextTarget();
+        }
+
+        // Запуск приложения
+        createBoard();
+        nextTarget();
+        loadHighscore(); // Показываем старый рекорд
+    </script>
+
+</body>
+</html>
