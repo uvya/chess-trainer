@@ -1,116 +1,26 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Шахматный Тренер Координат</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: #121212;
-            color: #ffffff;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            user-select: none;
-        }
-
-        .app-container {
-            width: 100%;
-            max-width: 400px;
-            padding: 20px;
-            box-sizing: border-box;
-            text-align: center;
-        }
-
-        h1 {
-            font-size: 24px;
-            margin-bottom: 5px;
-            color: #4CAF50;
-        }
-
-        .stats {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 20px;
-            font-size: 16px;
-            background: #1e1e1e;
-            padding: 10px;
-            border-radius: 10px;
-        }
-
-        .target-box {
-            font-size: 48px;
-            font-weight: bold;
-            margin-bottom: 20px;
-            color: #ffeb3b;
-            text-shadow: 0 0 10px rgba(255, 235, 59, 0.3);
-        }
-
-        .chessboard {
-            display: grid;
-            grid-template-columns: repeat(8, 1fr);
-            grid-template-rows: repeat(8, 1fr);
-            width: 100%;
-            aspect-ratio: 1 / 1; 
-            border: 4px solid #333;
-            border-radius: 4px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-        }
-
-        .cell {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 11px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.1s ease;
-        }
-
-        .light {
-            background-color: #f0d9b5;
-            color: #b58863;
-        }
-
-        .dark {
-            background-color: #b58863;
-            color: #f0d9b5;
-        }
-
-        .cell:active {
-            opacity: 0.7;
-        }
-    </style>
-</head>
-<body>
-
-    <div class="app-container">
-        <h1>Chess Coordinates</h1>
-        
-        <div class="stats">
-            <div>Очки: <span id="score">0</span></div>
-            <div>Рекорд: <span id="highscore">0</span></div>
-            <div>Время: <span id="timer">30</span>с</div>
-        </div>
-
-        <div class="target-box" id="target">??</div>
-        <div class="chessboard" id="board"></div>
-    </div>
-
     <script>
+        const languages = {
+            en: { title: "Chess Trainer", score: "Score", record: "Record", time: "Time", side: "Side", mode: "Mode", white: "White", black: "Black", opt30: "30 seconds", optInf: "Infinite", checkBorder: "Borders", checkCells: "Cells", alertNew: "New Record! Score: ", alertTime: "Time up! Score: " },
+            ru: { title: "Шахматный Тренер", score: "Очки", record: "Рекорд", time: "Время", side: "Сторона", mode: "Режим", white: "Белые", black: "Черные", opt30: "30 секунд", optInf: "Бесконечно", checkBorder: "По краям", checkCells: "На клетках", alertNew: "Новый рекорд! Очки: ", alertTime: "Время вышло! Очки: " },
+            es: { title: "Entrenador", score: "Puntos", record: "Récord", time: "Tiempo", side: "Bando", mode: "Modo", white: "Blancas", black: "Negras", opt30: "30 segundos", optInf: "Infinito", checkBorder: "Bordes", checkCells: "Casillas", alertNew: "¡Nuevo récord! Puntos: ", alertTime: "¡Tiempo agotado! Puntos: " },
+            fr: { title: "Entraîneur", score: "Score", record: "Record", time: "Temps", side: "Camp", mode: "Mode", white: "Blancs", black: "Noirs", opt30: "30 secondes", optInf: "Infini", checkBorder: "Bordures", checkCells: "Cases", alertNew: "Nouveau record! Score: ", alertTime: "Temps écoulé! Score: " },
+            de: { title: "Schachtrainer", score: "Punkte", record: "Rekord", time: "Zeit", side: "Seite", mode: "Modus", white: "Weiß", black: "Schwarz", opt30: "30 Sekunden", optInf: "Endlos", checkBorder: "Ränder", checkCells: "Felder", alertNew: "Neuer Rekord! Punkte: ", alertTime: "Zeit abgelaufen! Punkte: " },
+            it: { title: "Allenatore", score: "Punti", record: "Record", time: "Tempo", side: "Lato", mode: "Modo", white: "Bianchi", black: "Neri", opt30: "30 secondi", optInf: "Infinito", checkBorder: "Bordi", checkCells: "Case", alertNew: "Nuovo record! Punti: ", alertTime: "Tempo scaduto! Punti: " },
+            pt: { title: "Treinador", score: "Pontos", record: "Recorde", time: "Tempo", side: "Lado", mode: "Modo", white: "Brancas", black: "Negras", opt30: "30 segundos", optInf: "Infinito", checkBorder: "Bordas", checkCells: "Casas", alertNew: "Novo recorde! Pontos: ", alertTime: "Tempo esgotado! Pontos: " },
+            tr: { title: "Satranç Antrenörü", score: "Skor", record: "Rekor", time: "Süre", side: "Taraf", mode: "Mod", white: "Beyaz", black: "Siyah", opt30: "30 saniye", optInf: "Sonsuz", checkBorder: "Kenarlar", checkCells: "Kareler", alertNew: "Yeni Rekor! Skor: ", alertTime: "Süre bitti! Skor: " },
+            zh: { title: "象棋坐标訓練", score: "得分", record: "纪录", time: "时间", side: "阵营", mode: "模式", white: "白棋", black: "黑棋", opt30: "30秒", optInf: "无限", checkBorder: "边缘坐标", checkCells: "棋盘坐标", alertNew: "新纪录！得分: ", alertTime: "时间 Performance！得分: " },
+            ar: { title: "مدرب الشطرنج", score: "النقاط", record: "الرقم القياسي", time: "الوقت", side: "الجانب", mode: "الوضع", white: "أبيض", black: "أسود", opt30: "30 ثانية", optInf: "لا نهائي", checkBorder: "الحواف", checkCells: "المربعات", alertNew: "رقم قياسي جديد! النقاط: ", alertTime: "انتهى الوقت! النقاط: " }
+        };
+
+        let currentLang = 'en';
         const board = document.getElementById('board');
         const targetBox = document.getElementById('target');
         const scoreBox = document.getElementById('score');
         const highscoreBox = document.getElementById('highscore');
         const timerBox = document.getElementById('timer');
 
-        const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
-        const ranks = ['8', '7', '6', '5', '4', '3', '2', '1'];
+        const filesArr = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+        const ranksArr = ['8', '7', '6', '5', '4', '3', '2', '1'];
 
         let allCoordinates = [];
         let score = 0;
@@ -120,18 +30,79 @@
         let gameInterval = null;
         let isPlaying = false;
 
-        // Загружаем рекорд из памяти браузера при старте страницы
-        function loadHighscore() {
-            const savedScore = localStorage.getItem('chess_highscore');
-            if (savedScore) {
-                highscore = parseInt(savedScore);
-                highscoreBox.innerText = highscore;
+        function playSound(type) {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                const ctx = new AudioContext();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                if (type === 'success') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+                    gain.gain.setValueAtTime(0.08, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.08);
+                    osc.start(); osc.stop(ctx.currentTime + 0.08);
+                } else if (type === 'error') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(130, ctx.currentTime);
+                    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
+                    osc.start(); osc.stop(ctx.currentTime + 0.15);
+                }
+            } catch (e) { console.log("Audio API Error", e); }
+        }
+
+        function changeLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('chess_lang', lang);
+            document.getElementById('lang-select').value = lang;
+            
+            // Смена направления для арабского языка
+            const appBody = document.getElementById('app-body');
+            if (lang === 'ar') appBody.classList.add('rtl');
+            else appBody.classList.remove('rtl');
+            
+            document.getElementById('ui-title').innerText = languages[lang].title;
+            document.getElementById('ui-label-side').innerText = languages[lang].side;
+            document.getElementById('ui-label-mode').innerText = languages[lang].mode;
+            document.getElementById('ui-opt-white').innerText = languages[lang].white;
+            document.getElementById('ui-opt-black').innerText = languages[lang].black;
+            document.getElementById('ui-opt-30').innerText = languages[lang].opt30;
+            document.getElementById('ui-opt-inf').innerText = languages[lang].optInf;
+            document.getElementById('ui-check-border').innerText = languages[lang].checkBorder;
+            document.getElementById('ui-check-cells').innerText = languages[lang].checkCells;
+            document.getElementById('ui-stat-score').innerText = languages[lang].score;
+            document.getElementById('ui-stat-record').innerText = languages[lang].record;
+            document.getElementById('ui-stat-time').innerText = languages[lang].time;
+            
+            if (document.getElementById('mode-select').value === 'infinite') {
+                timerBox.innerText = '∞';
             }
+        }
+
+        function toggleCellLabels() {
+            const check = document.getElementById('cell-coord-check').checked;
+            board.classList.toggle('show-cell-labels', check);
+            localStorage.setItem('chess_show_cells', check);
+        }
+
+        function toggleBorderLabels() {
+            const check = document.getElementById('border-coord-check').checked;
+            board.classList.toggle('show-border-labels', check);
+            localStorage.setItem('chess_show_borders', check);
         }
 
         function createBoard() {
             board.innerHTML = '';
             allCoordinates = [];
+            const side = document.getElementById('side-select').value;
+            
+            const ranks = side === 'white' ? [...ranksArr] : [...ranksArr].reverse();
+            const files = side === 'white' ? [...filesArr] : [...filesArr].reverse();
 
             for (let r = 0; r < ranks.length; r++) {
                 for (let f = 0; f < files.length; f++) {
@@ -140,14 +111,29 @@
 
                     const cell = document.createElement('div');
                     cell.classList.add('cell');
-                    
-                    if ((r + f) % 2 === 0) {
-                        cell.classList.add('light');
-                    } else {
-                        cell.classList.add('dark');
-                    }
+                    if ((r + f) % 2 === 0) cell.classList.add('light');
+                    else cell.classList.add('dark');
 
                     cell.dataset.coord = coordinate;
+
+                    const cellLabel = document.createElement('span');
+                    cellLabel.classList.add('cell-label');
+                    cellLabel.innerText = coordinate;
+                    cell.appendChild(cellLabel);
+
+                    if (r === 7) {
+                        const fileLabel = document.createElement('span');
+                        fileLabel.classList.add('border-labels', 'label-file');
+                        fileLabel.innerText = files[f];
+                        cell.appendChild(fileLabel);
+                    }
+                    if (f === 0) {
+                        const rankLabel = document.createElement('span');
+                        rankLabel.classList.add('border-labels', 'label-rank');
+                        rankLabel.innerText = ranks[r];
+                        cell.appendChild(rankLabel);
+                    }
+
                     cell.addEventListener('click', () => handleCellClick(coordinate, cell));
                     board.appendChild(cell);
                 }
@@ -160,66 +146,92 @@
             targetBox.innerText = currentTarget;
         }
 
-        function startTimer() {
-            isPlaying = true;
-            gameInterval = setInterval(() => {
-                timeLeft--;
+        function initGame() {
+            clearInterval(gameInterval);
+            score = 0;
+            isPlaying = false;
+            scoreBox.innerText = score;
+            
+            const mode = document.getElementById('mode-select').value;
+            if (mode === 'infinite') {
+                timeLeft = Infinity;
+                timerBox.innerText = '∞';
+            } else {
+                timeLeft = 30;
                 timerBox.innerText = timeLeft;
+            }
 
+            createBoard();
+            nextTarget();
+            loadHighscore();
+        }
                 if (timeLeft <= 0) {
                     clearInterval(gameInterval);
                     isPlaying = false;
                     
-                    // Проверяем и сохраняем новый рекорд
+                    const side = document.getElementById('side-select').value;
+                    const recordKey = `chess_highscore_${side}`;
+
                     if (score > highscore) {
                         highscore = score;
-                        localStorage.setItem('chess_highscore', highscore);
+                        localStorage.setItem(recordKey, highscore);
                         highscoreBox.innerText = highscore;
-                        alert(`Новый рекорд! Вы набрали: ${score}`);
+                        alert(languages[currentLang].alertNew + score);
                     } else {
-                        alert(`Время вышло! Ваши очки: ${score}`);
+                        alert(languages[currentLang].alertTime + score);
                     }
-                    
-                    resetGame();
+                    initGame();
                 }
             }, 1000);
         }
 
         function handleCellClick(clickedCoord, cellElement) {
             if (timeLeft <= 0) return;
+            const mode = document.getElementById('mode-select').value;
 
-            if (!isPlaying && score === 0 && timeLeft === 30) {
-                startTimer();
+            if (!isPlaying && score === 0) {
+                if (mode === 'infinite' || timeLeft === 30) {
+                    startTimer();
+                }
             }
 
             if (clickedCoord === currentTarget) {
                 score++;
                 scoreBox.innerText = score;
-                
+                playSound('success');
                 cellElement.style.backgroundColor = '#2ecc71';
                 setTimeout(() => cellElement.style.backgroundColor = '', 150);
-
                 nextTarget();
             } else {
+                playSound('error');
                 cellElement.style.backgroundColor = '#e74c3c';
                 setTimeout(() => cellElement.style.backgroundColor = '', 150);
             }
         }
 
-        function resetGame() {
-            score = 0;
-            timeLeft = 30;
-            scoreBox.innerText = score;
-            timerBox.innerText = timeLeft;
-            isPlaying = false;
-            nextTarget();
+        function loadHighscore() {
+            const side = document.getElementById('side-select').value;
+            const savedScore = localStorage.getItem(`chess_highscore_${side}`);
+            highscore = savedScore ? parseInt(savedScore) : 0;
+            highscoreBox.innerText = highscore;
         }
 
-        // Запуск приложения
-        createBoard();
-        nextTarget();
-        loadHighscore(); // Показываем старый рекорд
-    </script>
+        function loadSettings() {
+            const savedLang = localStorage.getItem('chess_lang') || 'en';
+            changeLanguage(savedLang);
 
+            const showCells = localStorage.getItem('chess_show_cells') === 'true';
+            document.getElementById('cell-coord-check').checked = showCells;
+            board.classList.toggle('show-cell-labels', showCells);
+
+            const showBorders = localStorage.getItem('chess_show_borders') === 'true';
+            document.getElementById('border-coord-check').checked = showBorders;
+            board.classList.toggle('show-border-labels', showBorders);
+        }
+
+        loadSettings();
+        initGame();
+    </script>
 </body>
 </html>
+
