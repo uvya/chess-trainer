@@ -89,24 +89,6 @@
     @keyframes fadeIn{from{opacity:0}to{opacity:1}}
     @keyframes scaleIn{from{transform:scale(0.8);opacity:0}to{transform:scale(1);opacity:1}}
   </style>
-
-  <!-- Yandex.Metrika counter -->
-  <script type="text/javascript" >
-     (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-     m[i].l=1*new Date();
-     for (var j = 0; j < e.length; j++) {if (e[j].r===r) { return; }}
-     k=e.createElement(t),a=e.getElementsByTagName(t),k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
-     (window, document, "script", "https://yandex.ru", "ym");
-
-     ym(110734850, "init", {
-          clickmap:true,
-          trackLinks:true,
-          accurateTrackBounce:true,
-          webvisor:true
-     });
-  </script>
-  <noscript><div><img src="https://yandex.ru" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-  <!-- /Yandex.Metrika counter -->
 </head>
 <body>
 <div id="app">
@@ -218,7 +200,6 @@
         const sel=document.getElementById('themeSelect');
         sel.options[0].textContent=t('themeDefault');
         sel.options[1].textContent=t('themeNeon');
-        // Обновить кнопку разблокировки
         const unlockBtn=document.getElementById('unlockNeonBtn');
         if(unlockBtn) unlockBtn.textContent=t('shareUnlock');
       }
@@ -257,7 +238,6 @@
     // ----- Тема -----
     function applyTheme(){
       document.body.classList.toggle('neon', st.theme==='neon');
-      // Обновить select, если существует
       const sel=document.getElementById('themeSelect');
       if(sel) sel.value=st.theme;
       const unlockBtn=document.getElementById('unlockNeonBtn');
@@ -268,7 +248,6 @@
           unlockBtn.style.display='inline-block';
         }
       }
-      // Если тема neon, но не разблокирована - принудительно сбросить на default
       if(st.theme==='neon' && !st.neonUnlocked){
         st.theme='default';
         saveST();
@@ -344,14 +323,11 @@
       unlockBtn.textContent=t('shareUnlock');
       unlockBtn.style.background='#ff9800';unlockBtn.style.color='#000';unlockBtn.style.border='none';unlockBtn.style.padding='4px 10px';unlockBtn.style.borderRadius='12px';unlockBtn.style.fontSize='0.7rem';unlockBtn.style.cursor='pointer';
       unlockBtn.addEventListener('click',function(){
-        // Шеринг для разблокировки
         const text = '🔥 Я тренирую координаты в шахматах! А ты? Разблокируй неоновую тему в @ChessCoordsTrainerBot!';
         shareTelegram(text, 'https://t.me/ChessCoordsTrainerBot');
-        // Сразу разблокируем (без проверки)
         st.neonUnlocked=true;
         saveST();
         applyTheme();
-        // Обновить select, чтобы можно было выбрать неон
         const sel=document.getElementById('themeSelect');
         if(sel) sel.value=st.theme;
         this.style.display='none';
@@ -454,20 +430,17 @@
         if(st.side==='white'){st.bestW=sc;}else{st.bestB=sc;}
         saveST();updateBestDisplay();
       }
-      // Показываем модалку для временных режимов
       if(st.mode!=='inf'){
         finalScoreEl.textContent=sc;
         if(sc>=10) finalMessageEl.textContent='🌟 '+t('greatJob');
         else if(sc>=5) finalMessageEl.textContent='👍 '+t('greatJob');
         else finalMessageEl.textContent='💪 '+t('greatJob');
         modalOverlay.classList.add('active');
-        // При клике на "Хвастаться" - шеринг результата
         shareResultBtn.onclick = function(){
           const text = `🏆 Я набрал ${sc} очков за ${st.mode} секунд в тренажёре шахматных координат! ⚡️ Попробуй и ты!`;
           shareTelegram(text, 'https://t.me/ChessCoordsTrainerBot');
         };
       } else {
-        // Для бесконечного режима - старый alert (или можно тоже модалку, но пока оставим)
         alert(t('alert')+' '+sc);
         resetGame();
       }
@@ -512,7 +485,6 @@
       modalOverlay.classList.remove('active');
       resetGame();
     });
-    // Закрытие по клику на оверлей
     modalOverlay.addEventListener('click', function(e){
       if(e.target===this){ this.classList.remove('active'); resetGame(); }
     });
@@ -530,5 +502,24 @@
     init();
   })();
 </script>
+
+<!-- Яндекс Метрика перенесена в самый конец body -->
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript" >
+  (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+  m[i].l=1*new Date();
+  for (var j = 0; j < e.length; j++) {if (e[j].r===r) { return; }}
+  k=e.createElement(t),a=e.getElementsByTagName(t),k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+  (window, document, "script", "https://yandex.ru", "ym");
+
+  ym(110734850, "init", {
+       clickmap:true,
+       trackLinks:true,
+       accurateTrackBounce:true,
+       webvisor:true
+  });
+</script>
+<noscript><div><img src="https://yandex.ru" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
 </body>
 </html>
