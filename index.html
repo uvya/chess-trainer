@@ -6,18 +6,19 @@
   <title>Chess Trainer</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
-    body{background:#1c1c1e;color:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;display:flex;justify-content:center;align-items:center;min-height:100vh;padding:10px}
+    body{background:#1c1c1e;color:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;display:flex;justify-content:center;align-items:center;min-height:100vh;padding:10px;transition:background 0.3s}
     #app{max-width:420px;width:100%;display:flex;flex-direction:column;gap:12px;align-items:center}
     h1{font-size:1.5rem;text-align:center;margin:0}
     .controls{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center;background:#2c2c2e;padding:10px;border-radius:10px;width:100%}
     .controls label{font-size:0.8rem;color:#aaa}
-    .controls select,.controls input[type=checkbox]{background:#3a3a3c;color:#fff;border:none;padding:6px 8px;border-radius:6px;font-size:0.85rem}
+    .controls select,.controls input[type=checkbox],.controls button{background:#3a3a3c;color:#fff;border:none;padding:6px 8px;border-radius:6px;font-size:0.85rem;cursor:pointer}
+    .controls button:hover{background:#4a4a4c}
     .controls .check-group{display:flex;align-items:center;gap:4px;font-size:0.8rem}
     .info{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-items:center;font-size:1rem}
     #target{font-size:2.5rem;font-weight:bold;color:#2ea6ff;min-width:80px;text-align:center}
     #score,#timer,#bestW,#bestB{background:#2c2c2e;padding:6px 12px;border-radius:8px}
     .board-wrap{width:100%;max-width:400px;aspect-ratio:1/1;position:relative}
-    .board{display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(8,1fr);width:100%;height:100%;border:2px solid #444;border-radius:4px;overflow:hidden}
+    .board{display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(8,1fr);width:100%;height:100%;border:2px solid #444;border-radius:4px;overflow:hidden;transition:all 0.3s}
     .cell{position:relative;display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;border:1px solid rgba(0,0,0,0.2);font-size:0;transition:background-color 0.1s}
     .cell.light{background:#f0d9b5}
     .cell.dark{background:#b58863}
@@ -30,7 +31,82 @@
     .left-edge .bl{left:3px;top:50%;transform:translateY(-50%)}
     .bottom-edge .bl{bottom:3px;left:50%;transform:translateX(-50%)}
     .left-edge.bottom-edge .bl{left:3px;bottom:3px;top:auto;transform:none}
+
+    /* NEON THEME */
+    body.neon { background:#0a0a1a; }
+    body.neon .board { border-color:#0ff; box-shadow:0 0 20px #0ff; }
+    body.neon .cell.light { background:#1a1a3a; }
+    body.neon .cell.dark { background:#0d0d2b; }
+    body.neon .cell.light .cl, body.neon .cell.dark .cl { color:#0ff; }
+    body.neon .cell.light .bl, body.neon .cell.dark .bl { color:#0ff; }
+    body.neon .controls { background:#111; border:1px solid #0ff; }
+    body.neon #score, body.neon #timer, body.neon #bestW, body.neon #bestB { background:#111; border:1px solid #0ff; }
+    body.neon #target { color:#0ff; text-shadow:0 0 10px #0ff; }
+
+    /* MODAL */
+    .modal-overlay {
+      display:none;
+      position:fixed;
+      top:0; left:0; width:100%; height:100%;
+      background:rgba(0,0,0,0.7);
+      justify-content:center;
+      align-items:center;
+      z-index:999;
+      backdrop-filter:blur(4px);
+      animation:fadeIn 0.3s;
+    }
+    .modal-overlay.active{display:flex}
+    .modal {
+      background:#2c2c2e;
+      padding:30px 20px;
+      border-radius:20px;
+      max-width:340px;
+      width:90%;
+      text-align:center;
+      color:#fff;
+      box-shadow:0 10px 40px rgba(0,0,0,0.5);
+      animation:scaleIn 0.3s;
+    }
+    .modal h2{font-size:1.8rem;margin-bottom:10px}
+    .modal .result{font-size:3rem;font-weight:bold;color:#2ea6ff;margin:10px 0}
+    .modal p{font-size:1rem;color:#aaa;margin:10px 0}
+    .modal button{
+      background:#2ea6ff;
+      color:#fff;
+      border:none;
+      padding:12px 24px;
+      border-radius:30px;
+      font-size:1rem;
+      font-weight:bold;
+      cursor:pointer;
+      margin:8px 4px;
+      transition:0.2s;
+    }
+    .modal button:hover{background:#1a8cff;transform:scale(1.02)}
+    .modal button.secondary{background:#555}
+    .modal button.secondary:hover{background:#666}
+
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+    @keyframes scaleIn{from{transform:scale(0.8);opacity:0}to{transform:scale(1);opacity:1}}
   </style>
+
+  <!-- Yandex.Metrika counter -->
+  <script type="text/javascript" >
+     (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+     m[i].l=1*new Date();
+     for (var j = 0; j < e.length; j++) {if (e[j].r===r) { return; }}
+     k=e.createElement(t),a=e.getElementsByTagName(t),k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+     (window, document, "script", "https://yandex.ru", "ym");
+
+     ym(110734850, "init", {
+          clickmap:true,
+          trackLinks:true,
+          accurateTrackBounce:true,
+          webvisor:true
+     });
+  </script>
+  <noscript><div><img src="https://yandex.ru" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+  <!-- /Yandex.Metrika counter -->
 </head>
 <body>
 <div id="app">
@@ -45,30 +121,51 @@
   <div class="info">
     <span id="bestW">0</span><span id="bestB">0</span>
   </div>
+  <!-- Кнопка "Вызвать друга" -->
+  <button id="shareFriendBtn" style="background:#2ea6ff;color:#fff;border:none;padding:10px 20px;border-radius:30px;font-weight:bold;cursor:pointer;width:100%;max-width:300px;font-size:1rem;">📣 Вызвать друга</button>
 </div>
+
+<!-- Модальное окно результатов -->
+<div class="modal-overlay" id="resultModal">
+  <div class="modal">
+    <h2>⏰ Время вышло!</h2>
+    <p>Твой результат:</p>
+    <div class="result" id="finalScore">0</div>
+    <p id="finalMessage">Отличная игра!</p>
+    <button id="shareResultBtn">🏆 Хвастаться результатом</button>
+    <button class="secondary" id="closeModalBtn">Закрыть</button>
+  </div>
+</div>
+
 <script>
   (function(){
+    // ----- ЯЗЫКИ (без арабского) -----
     const L={
-      en:{title:'Chess Trainer',score:'Score',time:'Time',bestW:'Best(White)',bestB:'Best(Black)',lang:'Language',side:'Side',mode:'Mode',borders:'Labels on borders',cells:'Labels on cells',alert:'Time up! Score:',opt30:'30 seconds',optInf:'Infinite',optW:'White',optB:'Black'},
-      ru:{title:'Шахматный тренажер',score:'Очки',time:'Время',bestW:'Рекорд(белые)',bestB:'Рекорд(черные)',lang:'Язык',side:'Сторона',mode:'Режим',borders:'Координаты по краям',cells:'Координаты на клетках',alert:'Время вышло! Счет:',opt30:'30 секунд',optInf:'Бесконечно',optW:'Белые',optB:'Черные'},
-      es:{title:'Entrenador de ajedrez',score:'Puntos',time:'Tiempo',bestW:'Récord(blancas)',bestB:'Récord(negras)',lang:'Idioma',side:'Lado',mode:'Modo',borders:'Etiquetas en bordes',cells:'Etiquetas en celdas',alert:'¡Tiempo! Puntuación:',opt30:'30 segundos',optInf:'Infinito',optW:'Blancas',optB:'Negras'},
-      fr:{title:'Entraîneur d\'échecs',score:'Points',time:'Temps',bestW:'Record(blancs)',bestB:'Record(noirs)',lang:'Langue',side:'Côté',mode:'Mode',borders:'Étiquettes bordures',cells:'Étiquettes cases',alert:'Temps écoulé! Score:',opt30:'30 secondes',optInf:'Infini',optW:'Blancs',optB:'Noirs'},
-      de:{title:'Schachtrainer',score:'Punkte',time:'Zeit',bestW:'Rekord(Weiß)',bestB:'Rekord(Schwarz)',lang:'Sprache',side:'Seite',mode:'Modus',borders:'Randbeschriftung',cells:'Feldbeschriftung',alert:'Zeit abgelaufen! Punktzahl:',opt30:'30 Sekunden',optInf:'Unendlich',optW:'Weiß',optB:'Schwarz'},
-      it:{title:'Allenatore di scacchi',score:'Punti',time:'Tempo',bestW:'Record(bianco)',bestB:'Record(nero)',lang:'Lingua',side:'Lato',mode:'Modalità',borders:'Etichette bordi',cells:'Etichette celle',alert:'Tempo scaduto! Punteggio:',opt30:'30 secondi',optInf:'Infinito',optW:'Bianco',optB:'Nero'},
-      pt:{title:'Treinador de xadrez',score:'Pontos',time:'Tempo',bestW:'Recorde(brancas)',bestB:'Recorde(pretas)',lang:'Idioma',side:'Lado',mode:'Modo',borders:'Rótulos bordas',cells:'Rótulos células',alert:'Tempo esgotado! Pontuação:',opt30:'30 segundos',optInf:'Infinito',optW:'Brancas',optB:'Pretas'},
-      tr:{title:'Satranç Antrenörü',score:'Puan',time:'Süre',bestW:'Rekor(Beyaz)',bestB:'Rekor(Siyah)',lang:'Dil',side:'Taraf',mode:'Mod',borders:'Kenar etiketleri',cells:'Hücre etiketleri',alert:'Süre doldu! Skor:',opt30:'30 saniye',optInf:'Sonsuz',optW:'Beyaz',optB:'Siyah'},
-      zh:{title:'国际象棋坐标训练',score:'分数',time:'时间',bestW:'最佳(白)',bestB:'最佳(黑)',lang:'语言',side:'执子',mode:'模式',borders:'边框标签',cells:'格内标签',alert:'时间到！得分：',opt30:'30秒',optInf:'无限',optW:'白方',optB:'黑方'}
-      // арабский язык (ar) полностью удалён
+      en:{title:'Chess Trainer',score:'Score',time:'Time',bestW:'Best(White)',bestB:'Best(Black)',lang:'Language',side:'Side',mode:'Mode',borders:'Labels on borders',cells:'Labels on cells',alert:'Time up! Score:',opt30:'30 sec',opt60:'60 sec',optInf:'Infinite',optW:'White',optB:'Black',shareFriend:'Call a friend',shareUnlock:'Share to unlock',theme:'Theme',themeDefault:'Classic',themeNeon:'Neon',shareResult:'Brag about result',close:'Close',timeUp:'Time\'s up!',yourResult:'Your result:',greatJob:'Great job!'},
+      ru:{title:'Шахматный тренажер',score:'Очки',time:'Время',bestW:'Рекорд(белые)',bestB:'Рекорд(черные)',lang:'Язык',side:'Сторона',mode:'Режим',borders:'Координаты по краям',cells:'Координаты на клетках',alert:'Время вышло! Счет:',opt30:'30 сек',opt60:'60 сек',optInf:'Бесконечно',optW:'Белые',optB:'Черные',shareFriend:'Позвать друга',shareUnlock:'Поделиться, чтобы разблокировать',theme:'Тема',themeDefault:'Классическая',themeNeon:'Неоновая',shareResult:'Похвастаться',close:'Закрыть',timeUp:'Время вышло!',yourResult:'Твой результат:',greatJob:'Отличная игра!'},
+      es:{title:'Entrenador de ajedrez',score:'Puntos',time:'Tiempo',bestW:'Récord(blancas)',bestB:'Récord(negras)',lang:'Idioma',side:'Lado',mode:'Modo',borders:'Etiquetas en bordes',cells:'Etiquetas en celdas',alert:'¡Tiempo! Puntuación:',opt30:'30 s',opt60:'60 s',optInf:'Infinito',optW:'Blancas',optB:'Negras',shareFriend:'Invitar amigo',shareUnlock:'Compartir para desbloquear',theme:'Tema',themeDefault:'Clásico',themeNeon:'Neón',shareResult:'Presumir',close:'Cerrar',timeUp:'¡Tiempo!',yourResult:'Tu resultado:',greatJob:'¡Buen trabajo!'},
+      fr:{title:'Entraîneur d\'échecs',score:'Points',time:'Temps',bestW:'Record(blancs)',bestB:'Record(noirs)',lang:'Langue',side:'Côté',mode:'Mode',borders:'Étiquettes bordures',cells:'Étiquettes cases',alert:'Temps écoulé! Score:',opt30:'30 s',opt60:'60 s',optInf:'Infini',optW:'Blancs',optB:'Noirs',shareFriend:'Appeler un ami',shareUnlock:'Partager pour débloquer',theme:'Thème',themeDefault:'Classique',themeNeon:'Néon',shareResult:'Vanter',close:'Fermer',timeUp:'Temps écoulé!',yourResult:'Ton résultat:',greatJob:'Bon travail!'},
+      de:{title:'Schachtrainer',score:'Punkte',time:'Zeit',bestW:'Rekord(Weiß)',bestB:'Rekord(Schwarz)',lang:'Sprache',side:'Seite',mode:'Modus',borders:'Randbeschriftung',cells:'Feldbeschriftung',alert:'Zeit abgelaufen! Punktzahl:',opt30:'30 s',opt60:'60 s',optInf:'Unendlich',optW:'Weiß',optB:'Schwarz',shareFriend:'Freund einladen',shareUnlock:'Teilen zum Freischalten',theme:'Thema',themeDefault:'Klassisch',themeNeon:'Neon',shareResult:'Angeben',close:'Schließen',timeUp:'Zeit abgelaufen!',yourResult:'Dein Ergebnis:',greatJob:'Gut gemacht!'},
+      it:{title:'Allenatore di scacchi',score:'Punti',time:'Tempo',bestW:'Record(bianco)',bestB:'Record(nero)',lang:'Lingua',side:'Lato',mode:'Modalità',borders:'Etichette bordi',cells:'Etichette celle',alert:'Tempo scaduto! Punteggio:',opt30:'30 s',opt60:'60 s',optInf:'Infinito',optW:'Bianco',optB:'Nero',shareFriend:'Chiama amico',shareUnlock:'Condividi per sbloccare',theme:'Tema',themeDefault:'Classico',themeNeon:'Neon',shareResult:'Vantarsi',close:'Chiudi',timeUp:'Tempo scaduto!',yourResult:'Il tuo punteggio:',greatJob:'Ottimo lavoro!'},
+      pt:{title:'Treinador de xadrez',score:'Pontos',time:'Tempo',bestW:'Recorde(brancas)',bestB:'Recorde(pretas)',lang:'Idioma',side:'Lado',mode:'Modo',borders:'Rótulos bordas',cells:'Rótulos células',alert:'Tempo esgotado! Pontuação:',opt30:'30 s',opt60:'60 s',optInf:'Infinito',optW:'Brancas',optB:'Pretas',shareFriend:'Chamar amigo',shareUnlock:'Compartilhar para desbloquear',theme:'Tema',themeDefault:'Clássico',themeNeon:'Neon',shareResult:'Exibir',close:'Fechar',timeUp:'Tempo esgotado!',yourResult:'Seu resultado:',greatJob:'Bom trabalho!'},
+      tr:{title:'Satranç Antrenörü',score:'Puan',time:'Süre',bestW:'Rekor(Beyaz)',bestB:'Rekor(Siyah)',lang:'Dil',side:'Taraf',mode:'Mod',borders:'Kenar etiketleri',cells:'Hücre etiketleri',alert:'Süre doldu! Skor:',opt30:'30 sn',opt60:'60 sn',optInf:'Sonsuz',optW:'Beyaz',optB:'Siyah',shareFriend:'Arkadaşı çağır',shareUnlock:'Paylaşarak aç',theme:'Tema',themeDefault:'Klasik',themeNeon:'Neon',shareResult:'Övün',close:'Kapat',timeUp:'Süre doldu!',yourResult:'Sonucun:',greatJob:'Harika!'},
+      zh:{title:'国际象棋坐标训练',score:'分数',time:'时间',bestW:'最佳(白)',bestB:'最佳(黑)',lang:'语言',side:'执子',mode:'模式',borders:'边框标签',cells:'格内标签',alert:'时间到！得分：',opt30:'30秒',opt60:'60秒',optInf:'无限',optW:'白方',optB:'黑方',shareFriend:'邀请朋友',shareUnlock:'分享解锁',theme:'主题',themeDefault:'经典',themeNeon:'霓虹',shareResult:'炫耀',close:'关闭',timeUp:'时间到！',yourResult:'你的得分：',greatJob:'太棒了！'}
     };
     const LS='ct_';
-    let st={lang:'en',side:'white',mode:'30',borders:false,cells:false,bestW:0,bestB:0};
+    let st={lang:'en',side:'white',mode:'30',borders:false,cells:false,bestW:0,bestB:0,theme:'default',neonUnlocked:false};
     let sc=0,tm=30,ga=true,ti=null,tc='';
     const board=document.getElementById('board'),targetEl=document.getElementById('target'),
       scoreEl=document.getElementById('score'),timerEl=document.getElementById('timer'),
       bestWEl=document.getElementById('bestW'),bestBEl=document.getElementById('bestB'),
       controls=document.getElementById('controls');
     let audioCtx=null;
+    const modalOverlay=document.getElementById('resultModal');
+    const finalScoreEl=document.getElementById('finalScore');
+    const finalMessageEl=document.getElementById('finalMessage');
+    const shareResultBtn=document.getElementById('shareResultBtn');
+    const closeModalBtn=document.getElementById('closeModalBtn');
 
+    // ----- Инициализация аудио -----
     function initAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();}
     function playTone(freq,type,dur){
       if(!audioCtx)return;
@@ -80,16 +177,18 @@
     function playCorrect(){playTone(580,'sine',0.08);}
     function playWrong(){playTone(130,'triangle',0.15);}
 
+    // ----- Работа с localStorage -----
     function loadST(){
       st.lang=localStorage.getItem(LS+'lang')||'en';
-      // защита от сохранённого арабского (которого больше нет)
-      if (!L[st.lang]) st.lang = 'en';
+      if (!L[st.lang]) st.lang='en';
       st.side=localStorage.getItem(LS+'side')||'white';
       st.mode=localStorage.getItem(LS+'mode')||'30';
       st.borders=localStorage.getItem(LS+'borders')==='1';
       st.cells=localStorage.getItem(LS+'cells')==='1';
       st.bestW=parseInt(localStorage.getItem(LS+'bestW'))||0;
       st.bestB=parseInt(localStorage.getItem(LS+'bestB'))||0;
+      st.theme=localStorage.getItem(LS+'theme')||'default';
+      st.neonUnlocked=localStorage.getItem(LS+'neonUnlocked')==='1';
     }
     function saveST(){
       localStorage.setItem(LS+'lang',st.lang);
@@ -99,54 +198,115 @@
       localStorage.setItem(LS+'cells',st.cells?'1':'0');
       localStorage.setItem(LS+'bestW',st.bestW);
       localStorage.setItem(LS+'bestB',st.bestB);
+      localStorage.setItem(LS+'theme',st.theme);
+      localStorage.setItem(LS+'neonUnlocked',st.neonUnlocked?'1':'0');
     }
+
+    // ----- Переводы -----
     function t(k){return L[st.lang][k]||k;}
+
     function applyLang(){
       document.documentElement.lang=st.lang;
-      // всегда ltr (арабский удалён)
       document.documentElement.dir='ltr';
       document.querySelectorAll('[data-i18n]').forEach(el=>{el.textContent=t(el.dataset.i18n);});
       updateControlsText();
       updateBestDisplay();
       targetEl.textContent=tc||'-';
+      // Обновить тексты кнопок
+      document.getElementById('shareFriendBtn').textContent='📣 '+t('shareFriend');
+      if (document.getElementById('themeSelect')) {
+        const sel=document.getElementById('themeSelect');
+        sel.options[0].textContent=t('themeDefault');
+        sel.options[1].textContent=t('themeNeon');
+        // Обновить кнопку разблокировки
+        const unlockBtn=document.getElementById('unlockNeonBtn');
+        if(unlockBtn) unlockBtn.textContent=t('shareUnlock');
+      }
+      // Текст модалки
+      document.querySelector('#resultModal h2').textContent=t('timeUp');
+      document.querySelector('#resultModal p').textContent=t('yourResult');
+      document.getElementById('shareResultBtn').textContent='🏆 '+t('shareResult');
+      document.getElementById('closeModalBtn').textContent=t('close');
     }
+
     function updateControlsText(){
       let sideSel=document.getElementById('sideSelect');
       if(sideSel){sideSel.options[0].textContent=t('optW');sideSel.options[1].textContent=t('optB');}
       let modeSel=document.getElementById('modeSelect');
-      if(modeSel){modeSel.options[0].textContent=t('opt30');modeSel.options[1].textContent=t('optInf');}
+      if(modeSel){
+        modeSel.options[0].textContent=t('opt30');
+        modeSel.options[1].textContent=t('opt60');
+        modeSel.options[2].textContent=t('optInf');
+      }
     }
     function updateBestDisplay(){
       bestWEl.textContent=t('bestW')+': '+st.bestW;
       bestBEl.textContent=t('bestB')+': '+st.bestB;
     }
 
+    // ----- Шеринг (Telegram или window.open) -----
+    function shareTelegram(text, url){
+      const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(url || '')}&text=${encodeURIComponent(text)}`;
+      if (window.Telegram && Telegram.WebApp) {
+        Telegram.WebApp.openTelegramLink(shareUrl);
+      } else {
+        window.open(shareUrl, '_blank');
+      }
+    }
+
+    // ----- Тема -----
+    function applyTheme(){
+      document.body.classList.toggle('neon', st.theme==='neon');
+      // Обновить select, если существует
+      const sel=document.getElementById('themeSelect');
+      if(sel) sel.value=st.theme;
+      const unlockBtn=document.getElementById('unlockNeonBtn');
+      if(unlockBtn){
+        if(st.theme==='neon' || st.neonUnlocked){
+          unlockBtn.style.display='none';
+        } else {
+          unlockBtn.style.display='inline-block';
+        }
+      }
+      // Если тема neon, но не разблокирована - принудительно сбросить на default
+      if(st.theme==='neon' && !st.neonUnlocked){
+        st.theme='default';
+        saveST();
+        applyTheme();
+      }
+    }
+
+    // ----- Построение интерфейса -----
     function buildControls(){
       controls.innerHTML='';
       let addLabel=(text,htmlFor)=>{let l=document.createElement('label');l.textContent=text;l.htmlFor=htmlFor;controls.appendChild(l);};
       let addSelect=(id,opts,cb)=>{
         let s=document.createElement('select');s.id=id;
-        opts.forEach((o,i)=>{let opt=document.createElement('option');opt.value=o.val;opt.textContent=o.txt;s.appendChild(opt);});
+        opts.forEach((o)=>{let opt=document.createElement('option');opt.value=o.val;opt.textContent=o.txt;s.appendChild(opt);});
         s.addEventListener('change',cb);controls.appendChild(s);return s;
       };
+
+      // Язык
       let langSel=addSelect('langSelect',[
         {val:'en',txt:'English'},{val:'ru',txt:'Русский'},{val:'es',txt:'Español'},{val:'fr',txt:'Français'},
         {val:'de',txt:'Deutsch'},{val:'it',txt:'Italiano'},{val:'pt',txt:'Português'},{val:'tr',txt:'Türkçe'},
         {val:'zh',txt:'中文'}
-        // арабский удалён
       ],e=>{st.lang=e.target.value;saveST();applyLang();});
       langSel.value=st.lang;
 
+      // Сторона
       let sideSel=addSelect('sideSelect',[
         {val:'white',txt:t('optW')},{val:'black',txt:t('optB')}
       ],e=>{st.side=e.target.value;saveST();resetGame();});
       sideSel.value=st.side;
 
+      // Режим (добавили 60)
       let modeSel=addSelect('modeSelect',[
-        {val:'30',txt:t('opt30')},{val:'inf',txt:t('optInf')}
+        {val:'30',txt:t('opt30')},{val:'60',txt:t('opt60')},{val:'inf',txt:t('optInf')}
       ],e=>{st.mode=e.target.value;saveST();resetGame();});
       modeSel.value=st.mode;
 
+      // Чекбоксы
       let cg1=document.createElement('div');cg1.className='check-group';
       let cbB=document.createElement('input');cbB.type='checkbox';cbB.id='chkBorders';cbB.checked=st.borders;
       cbB.addEventListener('change',e=>{st.borders=e.target.checked;saveST();updLbls();});
@@ -160,8 +320,51 @@
       let lblC=document.createElement('label');lblC.htmlFor='chkCells';lblC.textContent=t('cells');
       cg2.appendChild(cbC);cg2.appendChild(lblC);
       controls.appendChild(cg2);
+
+      // Тема
+      let themeGroup=document.createElement('div');themeGroup.style.display='flex';themeGroup.style.alignItems='center';themeGroup.style.gap='6px';
+      let themeLabel=document.createElement('label');themeLabel.textContent=t('theme')+':';
+      themeGroup.appendChild(themeLabel);
+      let themeSel=document.createElement('select');themeSel.id='themeSelect';
+      themeSel.innerHTML=`<option value="default">${t('themeDefault')}</option><option value="neon">${t('themeNeon')}</option>`;
+      themeSel.value=st.theme;
+      themeSel.addEventListener('change',e=>{
+        const val=e.target.value;
+        if(val==='neon' && !st.neonUnlocked){
+          alert('Сначала разблокируйте тему через кнопку "Поделиться"!');
+          themeSel.value=st.theme;
+          return;
+        }
+        st.theme=val;
+        saveST();
+        applyTheme();
+      });
+      themeGroup.appendChild(themeSel);
+      let unlockBtn=document.createElement('button');unlockBtn.id='unlockNeonBtn';
+      unlockBtn.textContent=t('shareUnlock');
+      unlockBtn.style.background='#ff9800';unlockBtn.style.color='#000';unlockBtn.style.border='none';unlockBtn.style.padding='4px 10px';unlockBtn.style.borderRadius='12px';unlockBtn.style.fontSize='0.7rem';unlockBtn.style.cursor='pointer';
+      unlockBtn.addEventListener('click',function(){
+        // Шеринг для разблокировки
+        const text = '🔥 Я тренирую координаты в шахматах! А ты? Разблокируй неоновую тему в @ChessCoordsTrainerBot!';
+        shareTelegram(text, 'https://t.me/ChessCoordsTrainerBot');
+        // Сразу разблокируем (без проверки)
+        st.neonUnlocked=true;
+        saveST();
+        applyTheme();
+        // Обновить select, чтобы можно было выбрать неон
+        const sel=document.getElementById('themeSelect');
+        if(sel) sel.value=st.theme;
+        this.style.display='none';
+      });
+      themeGroup.appendChild(unlockBtn);
+      controls.appendChild(themeGroup);
+
+      // Сохраняем ссылку для обновления текстов при смене языка
+      window.themeSelect=themeSel;
+      window.unlockNeonBtn=unlockBtn;
     }
 
+    // ----- Доска -----
     function buildBoard(){
       board.innerHTML='';
       let files=st.side==='white'?['a','b','c','d','e','f','g','h']:['h','g','f','e','d','c','b','a'];
@@ -180,7 +383,9 @@
         }
       }
       updLbls();
+      applyTheme();
     }
+
     function updLbls(){
       let cells=board.children;
       let files=st.side==='white'?['a','b','c','d','e','f','g','h']:['h','g','f','e','d','c','b','a'];
@@ -203,6 +408,8 @@
       board.classList.toggle('show-cells',st.cells);
       board.classList.toggle('show-borders',st.borders);
     }
+
+    // ----- Игровая логика -----
     function newTarget(){
       let files=st.side==='white'?['a','b','c','d','e','f','g','h']:['h','g','f','e','d','c','b','a'];
       let ranks=st.side==='white'?[8,7,6,5,4,3,2,1]:[1,2,3,4,5,6,7,8];
@@ -211,32 +418,61 @@
       tc=files[rf]+ranks[rr];
       targetEl.textContent=tc;
     }
+
     function resetGame(){
-      sc=0;tm=st.mode==='30'?30:null;ga=true;
+      sc=0;
+      if(st.mode==='30') tm=30;
+      else if(st.mode==='60') tm=60;
+      else tm=null;
+      ga=true;
       if(ti){clearInterval(ti);ti=null;}
       scoreEl.textContent=sc;
-      timerEl.textContent=st.mode==='30'?tm:'∞';
+      timerEl.textContent=(tm!==null)?tm:'∞';
       newTarget();
+      modalOverlay.classList.remove('active');
     }
+
     function startTimer(){
-      if(st.mode!=='30')return;
-      tm=30;timerEl.textContent=tm;
+      if(st.mode==='inf') return;
+      if(ti){clearInterval(ti);ti=null;}
+      tm = (st.mode==='30')?30:60;
+      timerEl.textContent=tm;
       ti=setInterval(()=>{
-        tm--;timerEl.textContent=tm;
-        if(tm<=0){endGame();}
+        tm--;
+        timerEl.textContent=tm;
+        if(tm<=0){
+          clearInterval(ti);ti=null;
+          endGame();
+        }
       },1000);
     }
+
     function endGame(){
-      if(ti){clearInterval(ti);ti=null;}
       ga=false;
       let curBest=st.side==='white'?st.bestW:st.bestB;
       if(sc>curBest){
         if(st.side==='white'){st.bestW=sc;}else{st.bestB=sc;}
         saveST();updateBestDisplay();
       }
-      alert(t('alert')+' '+sc);
-      resetGame();
+      // Показываем модалку для временных режимов
+      if(st.mode!=='inf'){
+        finalScoreEl.textContent=sc;
+        if(sc>=10) finalMessageEl.textContent='🌟 '+t('greatJob');
+        else if(sc>=5) finalMessageEl.textContent='👍 '+t('greatJob');
+        else finalMessageEl.textContent='💪 '+t('greatJob');
+        modalOverlay.classList.add('active');
+        // При клике на "Хвастаться" - шеринг результата
+        shareResultBtn.onclick = function(){
+          const text = `🏆 Я набрал ${sc} очков за ${st.mode} секунд в тренажёре шахматных координат! ⚡️ Попробуй и ты!`;
+          shareTelegram(text, 'https://t.me/ChessCoordsTrainerBot');
+        };
+      } else {
+        // Для бесконечного режима - старый alert (или можно тоже модалку, но пока оставим)
+        alert(t('alert')+' '+sc);
+        resetGame();
+      }
     }
+
     function updateBestDuring(){
       let curBest=st.side==='white'?st.bestW:st.bestB;
       if(sc>curBest){
@@ -244,6 +480,7 @@
         saveST();updateBestDisplay();
       }
     }
+
     function onCellClick(e){
       if(!ga)return;
       initAudio();
@@ -253,7 +490,7 @@
         playCorrect();
         this.classList.add('flash-green');
         setTimeout(()=>this.classList.remove('flash-green'),150);
-        if(st.mode==='30' && !ti) startTimer();
+        if(st.mode!=='inf' && !ti) startTimer();
         newTarget();
         updateBestDuring();
       }else{
@@ -263,6 +500,24 @@
       }
     }
 
+    // ----- Кнопка "Вызвать друга" -----
+    document.getElementById('shareFriendBtn').addEventListener('click',function(){
+      let best = (st.side==='white')?st.bestW:st.bestB;
+      const text = `🎯 Я набрал ${best} очков в тренажере шахматных координат! Сможешь побить мой рекорд? Бросаю тебе вызов!`;
+      shareTelegram(text, 'https://t.me/ChessCoordsTrainerBot');
+    });
+
+    // ----- Закрытие модалки -----
+    closeModalBtn.addEventListener('click', function(){
+      modalOverlay.classList.remove('active');
+      resetGame();
+    });
+    // Закрытие по клику на оверлей
+    modalOverlay.addEventListener('click', function(e){
+      if(e.target===this){ this.classList.remove('active'); resetGame(); }
+    });
+
+    // ----- Инициализация -----
     function init(){
       loadST();
       applyLang();
@@ -270,6 +525,7 @@
       buildBoard();
       updateBestDisplay();
       resetGame();
+      applyTheme();
     }
     init();
   })();
