@@ -1,262 +1,278 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no"><title>Chess Trainer</title><style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:#1c1c1e;color:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;display:flex;justify-content:center;align-items:center;min-height:100vh;padding:10px}
-#app{max-width:420px;width:100%;display:flex;flex-direction:column;gap:12px;align-items:center}
-h1{font-size:1.5rem;text-align:center;margin:0}
-.controls{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center;background:#2c2c2e;padding:10px;border-radius:10px;width:100%}
-.controls label{font-size:0.8rem;color:#aaa}
-.controls select,.controls input[type=checkbox]{background:#3a3a3c;color:#fff;border:none;padding:6px 8px;border-radius:6px;font-size:0.85rem}
-.controls .check-group{display:flex;align-items:center;gap:4px;font-size:0.8rem}
-.info{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-items:center;font-size:1rem}
-#target{font-size:2.5rem;font-weight:bold;color:#2ea6ff;min-width:80px;text-align:center}
-#score,#timer,#bestW,#bestB{background:#2c2c2e;padding:6px 12px;border-radius:8px}
-.board-wrap{width:100%;max-width:400px;aspect-ratio:1/1;position:relative}
-.board{display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(8,1fr);width:100%;height:100%;border:2px solid #444;border-radius:4px;overflow:hidden}
-.cell{position:relative;display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;border:1px solid rgba(0,0,0,0.2);font-size:0;transition:background-color 0.1s}
-.cell.light{background:#f0d9b5}
-.cell.dark{background:#b58863}
-.cell.flash-green{background:#4caf50!important}
-.cell.flash-red{background:#f44336!important}
-.cl{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:clamp(10px,3vw,16px);color:rgba(0,0,0,0.6);pointer-events:none;display:none}
-.show-cells .cl{display:block}
-.bl{position:absolute;font-size:10px;color:rgba(0,0,0,0.7);display:none}
-.show-borders .bl{display:block}
-.left-edge .bl{left:3px;top:50%;transform:translateY(-50%)}
-.bottom-edge .bl{bottom:3px;left:50%;transform:translateX(-50%)}
-.left-edge.bottom-edge .bl{left:3px;bottom:3px;top:auto;transform:none}
-</style></head><body><div id="app">
-<h1 data-i18n="title">Chess Trainer</h1>
-<div class="controls" id="controls"></div>
-<div class="info">
-<span id="target">-</span>
-<span id="score">0</span>
-<span id="timer">30</span>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+  <title>Chess Trainer</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#1c1c1e;color:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;display:flex;justify-content:center;align-items:center;min-height:100vh;padding:10px}
+    #app{max-width:420px;width:100%;display:flex;flex-direction:column;gap:12px;align-items:center}
+    h1{font-size:1.5rem;text-align:center;margin:0}
+    .controls{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center;background:#2c2c2e;padding:10px;border-radius:10px;width:100%}
+    .controls label{font-size:0.8rem;color:#aaa}
+    .controls select,.controls input[type=checkbox]{background:#3a3a3c;color:#fff;border:none;padding:6px 8px;border-radius:6px;font-size:0.85rem}
+    .controls .check-group{display:flex;align-items:center;gap:4px;font-size:0.8rem}
+    .info{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-items:center;font-size:1rem}
+    #target{font-size:2.5rem;font-weight:bold;color:#2ea6ff;min-width:80px;text-align:center}
+    #score,#timer,#bestW,#bestB{background:#2c2c2e;padding:6px 12px;border-radius:8px}
+    .board-wrap{width:100%;max-width:400px;aspect-ratio:1/1;position:relative}
+    .board{display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(8,1fr);width:100%;height:100%;border:2px solid #444;border-radius:4px;overflow:hidden}
+    .cell{position:relative;display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;border:1px solid rgba(0,0,0,0.2);font-size:0;transition:background-color 0.1s}
+    .cell.light{background:#f0d9b5}
+    .cell.dark{background:#b58863}
+    .cell.flash-green{background:#4caf50!important}
+    .cell.flash-red{background:#f44336!important}
+    .cl{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:clamp(10px,3vw,16px);color:rgba(0,0,0,0.6);pointer-events:none;display:none}
+    .show-cells .cl{display:block}
+    .bl{position:absolute;font-size:10px;color:rgba(0,0,0,0.7);display:none}
+    .show-borders .bl{display:block}
+    .left-edge .bl{left:3px;top:50%;transform:translateY(-50%)}
+    .bottom-edge .bl{bottom:3px;left:50%;transform:translateX(-50%)}
+    .left-edge.bottom-edge .bl{left:3px;bottom:3px;top:auto;transform:none}
+  </style>
+</head>
+<body>
+<div id="app">
+  <h1 data-i18n="title">Chess Trainer</h1>
+  <div class="controls" id="controls"></div>
+  <div class="info">
+    <span id="target">-</span>
+    <span id="score">0</span>
+    <span id="timer">30</span>
+  </div>
+  <div class="board-wrap"><div id="board" class="board"></div></div>
+  <div class="info">
+    <span id="bestW">0</span><span id="bestB">0</span>
+  </div>
 </div>
-<div class="board-wrap"><div id="board" class="board"></div></div>
-<div class="info">
-<span id="bestW">0</span><span id="bestB">0</span>
-</div>
-</div><script>
-(function(){
-const L={
-en:{title:'Chess Trainer',score:'Score',time:'Time',bestW:'Best(White)',bestB:'Best(Black)',lang:'Language',side:'Side',mode:'Mode',borders:'Labels on borders',cells:'Labels on cells',alert:'Time up! Score:',opt30:'30 seconds',optInf:'Infinite',optW:'White',optB:'Black'},
-ru:{title:'Шахматный тренажер',score:'Очки',time:'Время',bestW:'Рекорд(белые)',bestB:'Рекорд(черные)',lang:'Язык',side:'Сторона',mode:'Режим',borders:'Координаты по краям',cells:'Координаты на клетках',alert:'Время вышло! Счет:',opt30:'30 секунд',optInf:'Бесконечно',optW:'Белые',optB:'Черные'},
-es:{title:'Entrenador de ajedrez',score:'Puntos',time:'Tiempo',bestW:'Récord(blancas)',bestB:'Récord(negras)',lang:'Idioma',side:'Lado',mode:'Modo',borders:'Etiquetas en bordes',cells:'Etiquetas en celdas',alert:'¡Tiempo! Puntuación:',opt30:'30 segundos',optInf:'Infinito',optW:'Blancas',optB:'Negras'},
-fr:{title:'Entraîneur d\'échecs',score:'Points',time:'Temps',bestW:'Record(blancs)',bestB:'Record(noirs)',lang:'Langue',side:'Côté',mode:'Mode',borders:'Étiquettes bordures',cells:'Étiquettes cases',alert:'Temps écoulé! Score:',opt30:'30 secondes',optInf:'Infini',optW:'Blancs',optB:'Noirs'},
-de:{title:'Schachtrainer',score:'Punkte',time:'Zeit',bestW:'Rekord(Weiß)',bestB:'Rekord(Schwarz)',lang:'Sprache',side:'Seite',mode:'Modus',borders:'Randbeschriftung',cells:'Feldbeschriftung',alert:'Zeit abgelaufen! Punktzahl:',opt30:'30 Sekunden',optInf:'Unendlich',optW:'Weiß',optB:'Schwarz'},
-it:{title:'Allenatore di scacchi',score:'Punti',time:'Tempo',bestW:'Record(bianco)',bestB:'Record(nero)',lang:'Lingua',side:'Lato',mode:'Modalità',borders:'Etichette bordi',cells:'Etichette celle',alert:'Tempo scaduto! Punteggio:',opt30:'30 secondi',optInf:'Infinito',optW:'Bianco',optB:'Nero'},
-pt:{title:'Treinador de xadrez',score:'Pontos',time:'Tempo',bestW:'Recorde(brancas)',bestB:'Recorde(pretas)',lang:'Idioma',side:'Lado',mode:'Modo',borders:'Rótulos bordas',cells:'Rótulos células',alert:'Tempo esgotado! Pontuação:',opt30:'30 segundos',optInf:'Infinito',optW:'Brancas',optB:'Pretas'},
-tr:{title:'Satranç Antrenörü',score:'Puan',time:'Süre',bestW:'Rekor(Beyaz)',bestB:'Rekor(Siyah)',lang:'Dil',side:'Taraf',mode:'Mod',borders:'Kenar etiketleri',cells:'Hücre etiketleri',alert:'Süre doldu! Skor:',opt30:'30 saniye',optInf:'Sonsuz',optW:'Beyaz',optB:'Siyah'},
-zh:{title:'国际象棋坐标训练',score:'分数',time:'时间',bestW:'最佳(白)',bestB:'最佳(黑)',lang:'语言',side:'执子',mode:'模式',borders:'边框标签',cells:'格内标签',alert:'时间到！得分：',opt30:'30秒',optInf:'无限',optW:'白方',optB:'黑方'},
-ar:{title:'مدرب الشطرنج',score:'النقاط',time:'الوقت',bestW:'أفضل(أبيض)',bestB:'أفضل(أسود)',lang:'اللغة',side:'الجانب',mode:'الوضع',borders:'تسميات الحواف',cells:'تسميات الخلايا',alert:'انتهى الوقت! النتيجة:',opt30:'٣٠ ثانية',optInf:'لانهائي',optW:'أبيض',optB:'أسود'}
-};
-const LS='ct_';
-let st={lang:'en',side:'white',mode:'30',borders:false,cells:false,bestW:0,bestB:0};
-let sc=0,tm=30,ga=true,ti=null,tc='';
-const board=document.getElementById('board'),targetEl=document.getElementById('target'),
-scoreEl=document.getElementById('score'),timerEl=document.getElementById('timer'),
-bestWEl=document.getElementById('bestW'),bestBEl=document.getElementById('bestB'),
-controls=document.getElementById('controls');
-let audioCtx=null;
+<script>
+  (function(){
+    const L={
+      en:{title:'Chess Trainer',score:'Score',time:'Time',bestW:'Best(White)',bestB:'Best(Black)',lang:'Language',side:'Side',mode:'Mode',borders:'Labels on borders',cells:'Labels on cells',alert:'Time up! Score:',opt30:'30 seconds',optInf:'Infinite',optW:'White',optB:'Black'},
+      ru:{title:'Шахматный тренажер',score:'Очки',time:'Время',bestW:'Рекорд(белые)',bestB:'Рекорд(черные)',lang:'Язык',side:'Сторона',mode:'Режим',borders:'Координаты по краям',cells:'Координаты на клетках',alert:'Время вышло! Счет:',opt30:'30 секунд',optInf:'Бесконечно',optW:'Белые',optB:'Черные'},
+      es:{title:'Entrenador de ajedrez',score:'Puntos',time:'Tiempo',bestW:'Récord(blancas)',bestB:'Récord(negras)',lang:'Idioma',side:'Lado',mode:'Modo',borders:'Etiquetas en bordes',cells:'Etiquetas en celdas',alert:'¡Tiempo! Puntuación:',opt30:'30 segundos',optInf:'Infinito',optW:'Blancas',optB:'Negras'},
+      fr:{title:'Entraîneur d\'échecs',score:'Points',time:'Temps',bestW:'Record(blancs)',bestB:'Record(noirs)',lang:'Langue',side:'Côté',mode:'Mode',borders:'Étiquettes bordures',cells:'Étiquettes cases',alert:'Temps écoulé! Score:',opt30:'30 secondes',optInf:'Infini',optW:'Blancs',optB:'Noirs'},
+      de:{title:'Schachtrainer',score:'Punkte',time:'Zeit',bestW:'Rekord(Weiß)',bestB:'Rekord(Schwarz)',lang:'Sprache',side:'Seite',mode:'Modus',borders:'Randbeschriftung',cells:'Feldbeschriftung',alert:'Zeit abgelaufen! Punktzahl:',opt30:'30 Sekunden',optInf:'Unendlich',optW:'Weiß',optB:'Schwarz'},
+      it:{title:'Allenatore di scacchi',score:'Punti',time:'Tempo',bestW:'Record(bianco)',bestB:'Record(nero)',lang:'Lingua',side:'Lato',mode:'Modalità',borders:'Etichette bordi',cells:'Etichette celle',alert:'Tempo scaduto! Punteggio:',opt30:'30 secondi',optInf:'Infinito',optW:'Bianco',optB:'Nero'},
+      pt:{title:'Treinador de xadrez',score:'Pontos',time:'Tempo',bestW:'Recorde(brancas)',bestB:'Recorde(pretas)',lang:'Idioma',side:'Lado',mode:'Modo',borders:'Rótulos bordas',cells:'Rótulos células',alert:'Tempo esgotado! Pontuação:',opt30:'30 segundos',optInf:'Infinito',optW:'Brancas',optB:'Pretas'},
+      tr:{title:'Satranç Antrenörü',score:'Puan',time:'Süre',bestW:'Rekor(Beyaz)',bestB:'Rekor(Siyah)',lang:'Dil',side:'Taraf',mode:'Mod',borders:'Kenar etiketleri',cells:'Hücre etiketleri',alert:'Süre doldu! Skor:',opt30:'30 saniye',optInf:'Sonsuz',optW:'Beyaz',optB:'Siyah'},
+      zh:{title:'国际象棋坐标训练',score:'分数',time:'时间',bestW:'最佳(白)',bestB:'最佳(黑)',lang:'语言',side:'执子',mode:'模式',borders:'边框标签',cells:'格内标签',alert:'时间到！得分：',opt30:'30秒',optInf:'无限',optW:'白方',optB:'黑方'}
+      // арабский язык (ar) полностью удалён
+    };
+    const LS='ct_';
+    let st={lang:'en',side:'white',mode:'30',borders:false,cells:false,bestW:0,bestB:0};
+    let sc=0,tm=30,ga=true,ti=null,tc='';
+    const board=document.getElementById('board'),targetEl=document.getElementById('target'),
+      scoreEl=document.getElementById('score'),timerEl=document.getElementById('timer'),
+      bestWEl=document.getElementById('bestW'),bestBEl=document.getElementById('bestB'),
+      controls=document.getElementById('controls');
+    let audioCtx=null;
 
-function initAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();}
-function playTone(freq,type,dur){
-if(!audioCtx)return;
-let o=audioCtx.createOscillator(),g=audioCtx.createGain();
-o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(0.3,audioCtx.currentTime);
-g.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+dur);
-o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+dur);
-}
-function playCorrect(){playTone(580,'sine',0.08);}
-function playWrong(){playTone(130,'triangle',0.15);}
+    function initAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();}
+    function playTone(freq,type,dur){
+      if(!audioCtx)return;
+      let o=audioCtx.createOscillator(),g=audioCtx.createGain();
+      o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(0.3,audioCtx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+dur);
+      o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+dur);
+    }
+    function playCorrect(){playTone(580,'sine',0.08);}
+    function playWrong(){playTone(130,'triangle',0.15);}
 
-function loadST(){
-st.lang=localStorage.getItem(LS+'lang')||'en';
-st.side=localStorage.getItem(LS+'side')||'white';
-st.mode=localStorage.getItem(LS+'mode')||'30';
-st.borders=localStorage.getItem(LS+'borders')==='1';
-st.cells=localStorage.getItem(LS+'cells')==='1';
-st.bestW=parseInt(localStorage.getItem(LS+'bestW'))||0;
-st.bestB=parseInt(localStorage.getItem(LS+'bestB'))||0;
-}
-function saveST(){
-localStorage.setItem(LS+'lang',st.lang);
-localStorage.setItem(LS+'side',st.side);
-localStorage.setItem(LS+'mode',st.mode);
-localStorage.setItem(LS+'borders',st.borders?'1':'0');
-localStorage.setItem(LS+'cells',st.cells?'1':'0');
-localStorage.setItem(LS+'bestW',st.bestW);
-localStorage.setItem(LS+'bestB',st.bestB);
-}
-function t(k){return L[st.lang][k]||k;}
-function applyLang(){
-document.documentElement.lang=st.lang;
-document.documentElement.dir=st.lang==='ar'?'rtl':'ltr';
-document.querySelectorAll('[data-i18n]').forEach(el=>{el.textContent=t(el.dataset.i18n);});
-updateControlsText();
-updateBestDisplay();
-targetEl.textContent=tc||'-';
-}
-function updateControlsText(){
-let sideSel=document.getElementById('sideSelect');
-if(sideSel){sideSel.options[0].textContent=t('optW');sideSel.options[1].textContent=t('optB');}
-let modeSel=document.getElementById('modeSelect');
-if(modeSel){modeSel.options[0].textContent=t('opt30');modeSel.options[1].textContent=t('optInf');}
-}
-function updateBestDisplay(){
-bestWEl.textContent=t('bestW')+': '+st.bestW;
-bestBEl.textContent=t('bestB')+': '+st.bestB;
-}
+    function loadST(){
+      st.lang=localStorage.getItem(LS+'lang')||'en';
+      // защита от сохранённого арабского (которого больше нет)
+      if (!L[st.lang]) st.lang = 'en';
+      st.side=localStorage.getItem(LS+'side')||'white';
+      st.mode=localStorage.getItem(LS+'mode')||'30';
+      st.borders=localStorage.getItem(LS+'borders')==='1';
+      st.cells=localStorage.getItem(LS+'cells')==='1';
+      st.bestW=parseInt(localStorage.getItem(LS+'bestW'))||0;
+      st.bestB=parseInt(localStorage.getItem(LS+'bestB'))||0;
+    }
+    function saveST(){
+      localStorage.setItem(LS+'lang',st.lang);
+      localStorage.setItem(LS+'side',st.side);
+      localStorage.setItem(LS+'mode',st.mode);
+      localStorage.setItem(LS+'borders',st.borders?'1':'0');
+      localStorage.setItem(LS+'cells',st.cells?'1':'0');
+      localStorage.setItem(LS+'bestW',st.bestW);
+      localStorage.setItem(LS+'bestB',st.bestB);
+    }
+    function t(k){return L[st.lang][k]||k;}
+    function applyLang(){
+      document.documentElement.lang=st.lang;
+      // всегда ltr (арабский удалён)
+      document.documentElement.dir='ltr';
+      document.querySelectorAll('[data-i18n]').forEach(el=>{el.textContent=t(el.dataset.i18n);});
+      updateControlsText();
+      updateBestDisplay();
+      targetEl.textContent=tc||'-';
+    }
+    function updateControlsText(){
+      let sideSel=document.getElementById('sideSelect');
+      if(sideSel){sideSel.options[0].textContent=t('optW');sideSel.options[1].textContent=t('optB');}
+      let modeSel=document.getElementById('modeSelect');
+      if(modeSel){modeSel.options[0].textContent=t('opt30');modeSel.options[1].textContent=t('optInf');}
+    }
+    function updateBestDisplay(){
+      bestWEl.textContent=t('bestW')+': '+st.bestW;
+      bestBEl.textContent=t('bestB')+': '+st.bestB;
+    }
 
-function buildControls(){
-controls.innerHTML='';
-let addLabel=(text,htmlFor)=>{let l=document.createElement('label');l.textContent=text;l.htmlFor=htmlFor;controls.appendChild(l);};
-let addSelect=(id,opts,cb)=>{
-let s=document.createElement('select');s.id=id;
-opts.forEach((o,i)=>{let opt=document.createElement('option');opt.value=o.val;opt.textContent=o.txt;s.appendChild(opt);});
-s.addEventListener('change',cb);controls.appendChild(s);return s;
-};
-let langSel=addSelect('langSelect',[
-{val:'en',txt:'English'},{val:'ru',txt:'Русский'},{val:'es',txt:'Español'},{val:'fr',txt:'Français'},
-{val:'de',txt:'Deutsch'},{val:'it',txt:'Italiano'},{val:'pt',txt:'Português'},{val:'tr',txt:'Türkçe'},
-{val:'zh',txt:'中文'},{val:'ar',txt:'العربية'}
-],e=>{st.lang=e.target.value;saveST();applyLang();});
-langSel.value=st.lang;
+    function buildControls(){
+      controls.innerHTML='';
+      let addLabel=(text,htmlFor)=>{let l=document.createElement('label');l.textContent=text;l.htmlFor=htmlFor;controls.appendChild(l);};
+      let addSelect=(id,opts,cb)=>{
+        let s=document.createElement('select');s.id=id;
+        opts.forEach((o,i)=>{let opt=document.createElement('option');opt.value=o.val;opt.textContent=o.txt;s.appendChild(opt);});
+        s.addEventListener('change',cb);controls.appendChild(s);return s;
+      };
+      let langSel=addSelect('langSelect',[
+        {val:'en',txt:'English'},{val:'ru',txt:'Русский'},{val:'es',txt:'Español'},{val:'fr',txt:'Français'},
+        {val:'de',txt:'Deutsch'},{val:'it',txt:'Italiano'},{val:'pt',txt:'Português'},{val:'tr',txt:'Türkçe'},
+        {val:'zh',txt:'中文'}
+        // арабский удалён
+      ],e=>{st.lang=e.target.value;saveST();applyLang();});
+      langSel.value=st.lang;
 
-let sideSel=addSelect('sideSelect',[
-{val:'white',txt:t('optW')},{val:'black',txt:t('optB')}
-],e=>{st.side=e.target.value;saveST();resetGame();});
-sideSel.value=st.side;
+      let sideSel=addSelect('sideSelect',[
+        {val:'white',txt:t('optW')},{val:'black',txt:t('optB')}
+      ],e=>{st.side=e.target.value;saveST();resetGame();});
+      sideSel.value=st.side;
 
-let modeSel=addSelect('modeSelect',[
-{val:'30',txt:t('opt30')},{val:'inf',txt:t('optInf')}
-],e=>{st.mode=e.target.value;saveST();resetGame();});
-modeSel.value=st.mode;
+      let modeSel=addSelect('modeSelect',[
+        {val:'30',txt:t('opt30')},{val:'inf',txt:t('optInf')}
+      ],e=>{st.mode=e.target.value;saveST();resetGame();});
+      modeSel.value=st.mode;
 
-let cg1=document.createElement('div');cg1.className='check-group';
-let cbB=document.createElement('input');cbB.type='checkbox';cbB.id='chkBorders';cbB.checked=st.borders;
-cbB.addEventListener('change',e=>{st.borders=e.target.checked;saveST();updLbls();});
-let lblB=document.createElement('label');lblB.htmlFor='chkBorders';lblB.textContent=t('borders');
-cg1.appendChild(cbB);cg1.appendChild(lblB);
-controls.appendChild(cg1);
+      let cg1=document.createElement('div');cg1.className='check-group';
+      let cbB=document.createElement('input');cbB.type='checkbox';cbB.id='chkBorders';cbB.checked=st.borders;
+      cbB.addEventListener('change',e=>{st.borders=e.target.checked;saveST();updLbls();});
+      let lblB=document.createElement('label');lblB.htmlFor='chkBorders';lblB.textContent=t('borders');
+      cg1.appendChild(cbB);cg1.appendChild(lblB);
+      controls.appendChild(cg1);
 
-let cg2=document.createElement('div');cg2.className='check-group';
-let cbC=document.createElement('input');cbC.type='checkbox';cbC.id='chkCells';cbC.checked=st.cells;
-cbC.addEventListener('change',e=>{st.cells=e.target.checked;saveST();updLbls();});
-let lblC=document.createElement('label');lblC.htmlFor='chkCells';lblC.textContent=t('cells');
-cg2.appendChild(cbC);cg2.appendChild(lblC);
-controls.appendChild(cg2);
-}
+      let cg2=document.createElement('div');cg2.className='check-group';
+      let cbC=document.createElement('input');cbC.type='checkbox';cbC.id='chkCells';cbC.checked=st.cells;
+      cbC.addEventListener('change',e=>{st.cells=e.target.checked;saveST();updLbls();});
+      let lblC=document.createElement('label');lblC.htmlFor='chkCells';lblC.textContent=t('cells');
+      cg2.appendChild(cbC);cg2.appendChild(lblC);
+      controls.appendChild(cg2);
+    }
 
-function buildBoard(){
-board.innerHTML='';
-let files=st.side==='white'?['a','b','c','d','e','f','g','h']:['h','g','f','e','d','c','b','a'];
-let ranks=st.side==='white'?[8,7,6,5,4,3,2,1]:[1,2,3,4,5,6,7,8];
-for(let r=0;r<8;r++){
-for(let c=0;c<8;c++){
-let coord=files[c]+ranks[r];
-let cell=document.createElement('div');
-cell.className='cell '+((r+c)%2===0?'light':'dark');
-cell.dataset.coord=coord;
-let cl=document.createElement('span');cl.className='cl';
-let bl=document.createElement('span');bl.className='bl';
-cell.appendChild(cl);cell.appendChild(bl);
-cell.addEventListener('click',onCellClick);
-board.appendChild(cell);
-}
-}
-updLbls();
-}
-function updLbls(){
-let cells=board.children;
-let files=st.side==='white'?['a','b','c','d','e','f','g','h']:['h','g','f','e','d','c','b','a'];
-let ranks=st.side==='white'?[8,7,6,5,4,3,2,1]:[1,2,3,4,5,6,7,8];
-for(let i=0;i<64;i++){
-let r=Math.floor(i/8),c=i%8;
-let cell=cells[i];
-let cl=cell.querySelector('.cl');
-let bl=cell.querySelector('.bl');
-let coord=files[c]+ranks[r];
-cl.textContent=st.cells?coord:'';
-cell.classList.remove('left-edge','bottom-edge');
-bl.textContent='';
-if(st.borders){
-if(c===0 && r===7){cell.classList.add('left-edge','bottom-edge');bl.textContent=files[0];}
-else if(c===0){cell.classList.add('left-edge');bl.textContent=ranks[r];}
-else if(r===7){cell.classList.add('bottom-edge');bl.textContent=files[c];}
-}
-}
-board.classList.toggle('show-cells',st.cells);
-board.classList.toggle('show-borders',st.borders);
-}
-function newTarget(){
-let files=st.side==='white'?['a','b','c','d','e','f','g','h']:['h','g','f','e','d','c','b','a'];
-let ranks=st.side==='white'?[8,7,6,5,4,3,2,1]:[1,2,3,4,5,6,7,8];
-let rf=Math.floor(Math.random()*8);
-let rr=Math.floor(Math.random()*8);
-tc=files[rf]+ranks[rr];
-targetEl.textContent=tc;
-}
-function resetGame(){
-sc=0;tm=st.mode==='30'?30:null;ga=true;
-if(ti){clearInterval(ti);ti=null;}
-scoreEl.textContent=sc;
-timerEl.textContent=st.mode==='30'?tm:'∞';
-newTarget();
-}
-function startTimer(){
-if(st.mode!=='30')return;
-tm=30;timerEl.textContent=tm;
-ti=setInterval(()=>{
-tm--;timerEl.textContent=tm;
-if(tm<=0){endGame();}
-},1000);
-}
-function endGame(){
-if(ti){clearInterval(ti);ti=null;}
-ga=false;
-let curBest=st.side==='white'?st.bestW:st.bestB;
-if(sc>curBest){
-if(st.side==='white'){st.bestW=sc;}else{st.bestB=sc;}
-saveST();updateBestDisplay();
-}
-alert(t('alert')+' '+sc);
-resetGame();
-}
-function updateBestDuring(){
-let curBest=st.side==='white'?st.bestW:st.bestB;
-if(sc>curBest){
-if(st.side==='white'){st.bestW=sc;}else{st.bestB=sc;}
-saveST();updateBestDisplay();
-}
-}
-function onCellClick(e){
-if(!ga)return;
-initAudio();
-let coord=this.dataset.coord;
-if(coord===tc){
-sc++;scoreEl.textContent=sc;
-playCorrect();
-this.classList.add('flash-green');
-setTimeout(()=>this.classList.remove('flash-green'),150);
-if(st.mode==='30' && !ti) startTimer();
-newTarget();
-updateBestDuring();
-}else{
-playWrong();
-this.classList.add('flash-red');
-setTimeout(()=>this.classList.remove('flash-red'),150);
-}
-}
+    function buildBoard(){
+      board.innerHTML='';
+      let files=st.side==='white'?['a','b','c','d','e','f','g','h']:['h','g','f','e','d','c','b','a'];
+      let ranks=st.side==='white'?[8,7,6,5,4,3,2,1]:[1,2,3,4,5,6,7,8];
+      for(let r=0;r<8;r++){
+        for(let c=0;c<8;c++){
+          let coord=files[c]+ranks[r];
+          let cell=document.createElement('div');
+          cell.className='cell '+((r+c)%2===0?'light':'dark');
+          cell.dataset.coord=coord;
+          let cl=document.createElement('span');cl.className='cl';
+          let bl=document.createElement('span');bl.className='bl';
+          cell.appendChild(cl);cell.appendChild(bl);
+          cell.addEventListener('click',onCellClick);
+          board.appendChild(cell);
+        }
+      }
+      updLbls();
+    }
+    function updLbls(){
+      let cells=board.children;
+      let files=st.side==='white'?['a','b','c','d','e','f','g','h']:['h','g','f','e','d','c','b','a'];
+      let ranks=st.side==='white'?[8,7,6,5,4,3,2,1]:[1,2,3,4,5,6,7,8];
+      for(let i=0;i<64;i++){
+        let r=Math.floor(i/8),c=i%8;
+        let cell=cells[i];
+        let cl=cell.querySelector('.cl');
+        let bl=cell.querySelector('.bl');
+        let coord=files[c]+ranks[r];
+        cl.textContent=st.cells?coord:'';
+        cell.classList.remove('left-edge','bottom-edge');
+        bl.textContent='';
+        if(st.borders){
+          if(c===0 && r===7){cell.classList.add('left-edge','bottom-edge');bl.textContent=files[0];}
+          else if(c===0){cell.classList.add('left-edge');bl.textContent=ranks[r];}
+          else if(r===7){cell.classList.add('bottom-edge');bl.textContent=files[c];}
+        }
+      }
+      board.classList.toggle('show-cells',st.cells);
+      board.classList.toggle('show-borders',st.borders);
+    }
+    function newTarget(){
+      let files=st.side==='white'?['a','b','c','d','e','f','g','h']:['h','g','f','e','d','c','b','a'];
+      let ranks=st.side==='white'?[8,7,6,5,4,3,2,1]:[1,2,3,4,5,6,7,8];
+      let rf=Math.floor(Math.random()*8);
+      let rr=Math.floor(Math.random()*8);
+      tc=files[rf]+ranks[rr];
+      targetEl.textContent=tc;
+    }
+    function resetGame(){
+      sc=0;tm=st.mode==='30'?30:null;ga=true;
+      if(ti){clearInterval(ti);ti=null;}
+      scoreEl.textContent=sc;
+      timerEl.textContent=st.mode==='30'?tm:'∞';
+      newTarget();
+    }
+    function startTimer(){
+      if(st.mode!=='30')return;
+      tm=30;timerEl.textContent=tm;
+      ti=setInterval(()=>{
+        tm--;timerEl.textContent=tm;
+        if(tm<=0){endGame();}
+      },1000);
+    }
+    function endGame(){
+      if(ti){clearInterval(ti);ti=null;}
+      ga=false;
+      let curBest=st.side==='white'?st.bestW:st.bestB;
+      if(sc>curBest){
+        if(st.side==='white'){st.bestW=sc;}else{st.bestB=sc;}
+        saveST();updateBestDisplay();
+      }
+      alert(t('alert')+' '+sc);
+      resetGame();
+    }
+    function updateBestDuring(){
+      let curBest=st.side==='white'?st.bestW:st.bestB;
+      if(sc>curBest){
+        if(st.side==='white'){st.bestW=sc;}else{st.bestB=sc;}
+        saveST();updateBestDisplay();
+      }
+    }
+    function onCellClick(e){
+      if(!ga)return;
+      initAudio();
+      let coord=this.dataset.coord;
+      if(coord===tc){
+        sc++;scoreEl.textContent=sc;
+        playCorrect();
+        this.classList.add('flash-green');
+        setTimeout(()=>this.classList.remove('flash-green'),150);
+        if(st.mode==='30' && !ti) startTimer();
+        newTarget();
+        updateBestDuring();
+      }else{
+        playWrong();
+        this.classList.add('flash-red');
+        setTimeout(()=>this.classList.remove('flash-red'),150);
+      }
+    }
 
-function init(){
-loadST();
-applyLang();
-buildControls();
-buildBoard();
-updateBestDisplay();
-resetGame();
-}
-init();
-})();
-</script></body></html>
+    function init(){
+      loadST();
+      applyLang();
+      buildControls();
+      buildBoard();
+      updateBestDisplay();
+      resetGame();
+    }
+    init();
+  })();
+</script>
+</body>
+</html>
